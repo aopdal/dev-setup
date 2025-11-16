@@ -9,7 +9,7 @@
     "remoteEnv": {
         "SSH_AUTH_SOCK": "/ssh-agent"
     },
-    "postCreateCommand": "pip install --user mkdocs, mkdocs-material",
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
     "customizations": {
         "vscode": {
             "settings": {

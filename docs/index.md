@@ -1,131 +1,100 @@
-# Oppsett av PC for utvikling
+# GærneArnes nettverksskole
 
-Dette oppsettet er basert på at brukeren har en Windows 11 PC.
-Og vi bruker WSL2 med Ubuntu 24.04, docker for devcontainers og VSCode som editor
+Dette er en liten samling av ting som kan være nyttig.
 
-Dette er i første rekke en hjelp for netverkskonsulenter for å komme opp på felles
-verktøyplatform for deling av kode og enkelt kunne hoppe inn o kjøre andres kode.
+For å sette opp utviklingsmiljøet på din Windows 11 maskin så følg oppsettet i
+[dev-environment](dev-environment.md).
 
-## Installasjon av WSL2
+Dette oppsettet laget for å forenkle deling av kode mest mulig. Og ikke minst at
+kjøremiljøet skal være enkelt å holde konsistent fra PC til PC.
 
-[Microsoft dokumentasjon](https://learn.microsoft.com/en-us/windows/wsl/install)
+## Fordeler ved bruk av DevContainer
 
-Start PowerShell som administrator og kjør:
+DevContainers gir deg et konsistent og isolert utviklingsmiljø med flere viktige fordeler:
 
-```bash
-wsl --install
-```
+### Konsistens på tvers av maskiner
+- Alle utviklere jobber i nøyaktig samme miljø, uavhengig av operativsystem
+- Eliminerer "det funker på min maskin"-problemer
+- Identisk oppsett mellom Windows, Mac og Linux
 
-Så må PC rebootes.
+### Enkel onboarding
+- Nye teammedlemmer er klare til å kode på minutter
+- Ingen tidkrevende manuell installasjon av verktøy og avhengigheter
+- Komplett miljø definert i kodefiler som kan versjonshåndteres
 
-I PowerShell som admin igjen:
+### Isolasjon og sikkerhet
+- Prosjektavhengigheter holdes separert fra vertsmaskinen
+- Ingen konflikt mellom ulike versjoner av Python, Node.js eller andre verktøy
+- Trygt å teste nye pakker uten å påvirke systemet ditt
 
-```bash
-wsl.exe --install Ubuntu-24.04
-```
+### Reproduserbarhet
+- Miljøet er definert som kode (Infrastructure as Code)
+- Lett å gjenskape eksakt samme oppsett når som helst
+- Perfekt for testing og feilsøking
 
-Du blir spurt om å lage bruker og sette passord i ubuntuen som ble installert.
+### Fleksibilitet
+- Raskt å bytte mellom ulike prosjekter med forskjellige krav
+- Støtte for tilpasninger per prosjekt
+- Kan lett integreres med CI/CD-pipelines
 
-```bash
-exit
-```
+## Alternativ: Python Virtual Environment (venv)
 
-Finn ubuntu i startmenyen og velg det og se at det starter opp.
+Dersom det ikke er mulig å bruke Docker eller DevContainers, er Python's innebygde `venv` et godt alternativ for å isolere prosjektavhengigheter.
 
-Oppdater programvaren med:
+### Hva er venv?
+`venv` er et innebygd Python-verktøy som skaper et isolert miljø for Python-pakker. Dette gjør at hvert prosjekt kan ha sine egne avhengigheter uten å påvirke andre prosjekter eller systemets Python-installasjon.
 
-```bash
-sudo apt update
-sudo apt upgrade -y
-```
+### Oppsett av venv
 
-i PowerShell vinduet:
-
-```bash
-wsl --shutdown
-```
-
-Etter reboot kommer ubuntu profil inn i terminal
-
-## Docker i WSL2 (uten docker desktop som krever lisens)
-
-Installere docker i wsl2:
+**Opprett et virtuelt miljø:**
 
 ```bash
-sudo apt install apt-transport-https ca-certificates curl software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt update
-sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-sudo usermod -aG docker $USER
+python -m venv .venv
 ```
 
-Lukk Linux vinduet og åpne igjen, sjekk at du er medlem av docker gruppa:
+**Aktiver miljøet:**
 
 ```bash
-id
+# Windows
+.venv\Scripts\activate
+
+# Linux/Mac
+source .venv/bin/activate
 ```
 
-output skal bli noe som dette:
+**Installer pakker:**
 
 ```bash
-uid=1000(arne) gid=1000(arne) groups=1000(arne),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),100(users),989(docker)
+pip install mkdocs
+# eller fra en requirements.txt fil
+pip install -r requirements.txt
 ```
 
-Teste docker:
+**Deaktiver miljøet når du er ferdig:**
 
 ```bash
-docker run hello-world
+deactivate
 ```
 
-Installer docker-compose og Python venv
+### Fordeler med venv
 
-```bash
-sudo apt install docker-compose -y
-sudo apt install python3.12-venv -y
-```
+- **Enkelt oppsett**: Ingen ekstra programvare utover Python kreves
+- **Lett å bruke**: Enkel å aktivere og deaktivere
+- **Isolasjon av pakker**: Hver prosjekt har sine egne avhengigheter
+- **Portabelt**: Fungerer på Windows, Mac og Linux
+- **Lav overhead**: Ingen containerisering, bruker maskinen direkte
 
-## SSH nøkkel
+### Ulemper sammenlignet med DevContainer
 
-SSH pålogging uten brukernavn og passord krever ssh nøkkel.
+- **Ikke fullstendig isolasjon**: Systemverktøy og operativsystem påvirker fremdeles miljøet
+- **Krever manuell oppsett**: Må installere Python og andre verktøy selv
+- **Mindre konsistent**: Kan fortsatt få forskjeller mellom maskiner
+- **Bare for Python**: Andre språk og verktøy må håndteres separat
 
-```bash
-ssh-keygen
-```
+### Når bør du bruke venv?
 
-(Sett passord)
+- Når Docker ikke er tilgjengelig eller tillatt
+- For enkle Python-prosjekter
+- Når du jobber alene og ikke trenger full konsistens
+- For rask prototyping og testing
 
-Laste ssh nøkkel inn i ssh-agent ved start (innlogging)
-
-```bash
-nano ~/.bashrc
-```
-
-Legg inn på slutten:
-
-```bash
-# start ssh-agent and load key
-if ! pgrep -u "$USER" ssh-agent > /dev/null; then
-   ssh-agent -s > ~/.ssh/ssh-agent-env
-fi
-if [ -f ~/.ssh/ssh-agent-env ]; then
-    . ~/.ssh/ssh-agent-env > /dev/null
-fi
-ssh-add ~/.ssh/id_ed25519
-```
-
-Teste å laste inn med:
-
-```bash
-source ~/.bashrc
-```
-
-Du blir spurt om passordet. For sessjonen vil du nå ikke bli spurt om passordet på
-nøkkelen hver gang den er i bruk. Det er mulig å legge passordet i lastpass og bruke
-commandline lpass osv.
-
-## VSCode
-
-I Windows - start opp "Microsoft store" og finn fram med å søke på vscode og klikk installer.
-
-Nede i høyre hjørne klikk på open a Remote window og velg connect to wsl.
