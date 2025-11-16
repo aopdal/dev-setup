@@ -97,4 +97,3 @@ deactivate
 - For enkle Python-prosjekter
 - Når du jobber alene og ikke trenger full konsistens
 - For rask prototyping og testing
-
