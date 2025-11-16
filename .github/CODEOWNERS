@@ -1,0 +1,22 @@
+# CODEOWNERS file
+# This file defines who must review and approve changes to specific files or directories
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything in the repo
+# All changes require approval from @aopdal
+*       @aopdal
+
+# Ansible configuration files
+ansible.cfg                     @aopdal
+hosts                          @aopdal
+
+# Playbooks require review
+/playbooks/**                  @aopdal
+
+# Variables and vault files (sensitive data)
+/group_vars/**                 @aopdal
+/host_vars/**                  @aopdal
+
+# Documentation
+/docs/**                       @aopdal
+*.md                          @aopdal
