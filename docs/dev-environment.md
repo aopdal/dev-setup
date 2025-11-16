@@ -139,3 +139,54 @@ File - Preferences - Settings
 ![Settings](images/settings.png)
 
 Så husker jeg ikke om jeg tok en reboot av hele maskinen før jeg testet videre.
+
+## Test oppsettet
+
+For å teste at alt viker må du clone dette repoet (alt dette i linux):
+
+Lag først en katalog hvor du samler de forskjellige projektene dine:
+
+```bash
+mkdir code
+cd code
+```
+
+clone repoet med:
+
+```bash
+git clone https://github.com/aopdal/dev-setup.git
+cd dev-setup
+```
+
+Nå skal det være mulig å starte opp VSCode direkte fra linux.
+
+```bash
+code .
+```
+
+Da kommer det opp en melding nede til høyre:
+
+![reopen in container](images/reopen.png)
+
+Velg Reopen in Container, og nå bygges containeren så det tar litt tid første gangen.
+
+Når den er klar kan du teste å starte opp denne dokumentasjonen lokalt med:
+
+```bash
+mkdocs serve
+```
+
+Nå stares det opp en webserver lokalt:
+
+```bash
+INFO    -  Building documentation...
+INFO    -  Cleaning site directory
+INFO    -  Documentation built in 0.25 seconds
+INFO    -  [09:20:44] Serving on http://127.0.0.1:8000/
+```
+
+Nå dukker det opp en melding i nedere høyre hjørne:
+
+![Open mkdocs](images/open-mkdocs.png)
+
+Velg Open in Browser og fortsett med neste øvelse :smile:
