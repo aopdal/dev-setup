@@ -8,6 +8,9 @@ For å sette opp utviklingsmiljøet på din Windows 11 maskin så følg oppsette
 For å lære om Ansible Vault og LastPass-integrasjonen, se
 [ansible-vault-guide](ansible-vault-guide.md).
 
+For grunnleggende Git-kommandoer og arbeidsflyter, se
+[git-basics](git-basics.md).
+
 Dette oppsettet laget for å forenkle deling av kode mest mulig. Og ikke minst at
 kjøremiljøet skal være enkelt å holde konsistent fra PC til PC.
 

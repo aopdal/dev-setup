@@ -23,6 +23,8 @@ nav:
       - Oppsett av PC: dev-environment.md
   - Ansible:
       - Hemligheter i Ansible: ansible-vault-guide.md
+  - Git:
+      - Git grunnleggende: git-basics.md
   - Sikkerhets betraktninger:
       - Kritiske punkter: CRITICAL-FIXES.md
       - Security assessment: security-assessment.md
