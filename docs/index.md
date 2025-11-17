@@ -5,6 +5,9 @@ Dette er en liten samling av ting som kan være nyttig.
 For å sette opp utviklingsmiljøet på din Windows 11 maskin så følg oppsettet i
 [dev-environment](dev-environment.md).
 
+For å lære om Ansible Vault og LastPass-integrasjonen, se
+[ansible-vault-guide](ansible-vault-guide.md).
+
 Dette oppsettet laget for å forenkle deling av kode mest mulig. Og ikke minst at
 kjøremiljøet skal være enkelt å holde konsistent fra PC til PC.
 
