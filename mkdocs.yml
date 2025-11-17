@@ -16,3 +16,13 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Hjem: index.md
+  - Oppsett:
+      - Oppsett av PC: dev-environment.md
+  - Ansible:
+      - Hemligheter i Ansible: ansible-vault-guide.md
+  - Sikkerhets betraktninger:
+      - Kritiske punkter: CRITICAL-FIXES.md
+      - Security assessment: security-assessment.md
