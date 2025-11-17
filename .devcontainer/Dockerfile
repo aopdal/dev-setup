@@ -1,10 +1,26 @@
 FROM python:3.12-slim
 
-# Install basic tools including bash-completion
+# Install basic tools including bash-completion and build dependencies for lastpass-cli
 RUN apt-get update && apt-get install -y \
     git \
     bash-completion \
+    build-essential \
+    cmake \
+    libcurl4-openssl-dev \
+    libxml2-dev \
+    libssl-dev \
+    pkg-config \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
+
+# Install lastpass-cli from source
+RUN git clone https://github.com/lastpass/lastpass-cli.git /tmp/lastpass-cli \
+    && cd /tmp/lastpass-cli \
+    && cmake . \
+    && make \
+    && make install \
+    && cd / \
+    && rm -rf /tmp/lastpass-cli
 
 # Create a non-root user
 ARG USERNAME=vscode
