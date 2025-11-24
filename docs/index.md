@@ -23,6 +23,9 @@ For å lære om pre-commit hooks for kodekvalitet, se
 For å lære om Conventional Commits og versjonshåndtering, se
 [conventional-commits](conventional-commits.md).
 
+For å fikse GitHub branch protection med automatisk release, se
+[github-branch-protection](github-branch-protection.md).
+
 Dette oppsettet laget for å forenkle deling av kode mest mulig. Og ikke minst at
 kjøremiljøet skal være enkelt å holde konsistent fra PC til PC.
 
