@@ -190,3 +190,52 @@ Nå dukker det opp en melding i nedere høyre hjørne:
 ![Open mkdocs](images/open-mkdocs.png)
 
 Velg Open in Browser og fortsett med neste øvelse :smile:
+
+## Bruke ssh-agent i Windows og forwarde til WSL
+
+Dette punktet hopper vi over for nå, men er helt klart en ting vi på sokt ønsker å legge til. Det gir samme ssh-nøkler i Windows, WSL og i devcontainer.
+
+For å bruke dine Windows SSH-nøkler og ssh-agent i WSL, kan du gjøre følgende:
+
+1. **Installer og start ssh-agent i Windows**
+
+Åpne PowerShell som vanlig bruker (ikke admin) og kjør:
+
+```powershell
+Start-Service ssh-agent
+Get-Service ssh-agent
+```
+
+Legg til nøkkelen din i Windows ssh-agent:
+
+```powershell
+ssh-add $env:USERPROFILE\.ssh\id_ed25519
+```
+
+2. **Installer `wsl-ssh-agent` (valgfritt, for automatisk forwarding)**
+
+Du kan bruke [wsl-ssh-agent](https://github.com/rupor-github/wsl-ssh-agent) for å gjøre forwarding sømløst. Følg instruksjonene i repoet for installasjon.
+
+3. **Forward ssh-agent inn i WSL**
+
+Legg til følgende i din `~/.bashrc` eller `~/.profile` i WSL:
+
+```bash
+# Forward Windows ssh-agent inn i WSL
+export SSH_AUTH_SOCK=$(wslpath "$(powershell.exe -NoProfile -Command "echo $env:SSH_AUTH_SOCK" | tr -d '\r')")
+```
+
+4. **Test at forwarding fungerer**
+
+I WSL-terminalen, kjør:
+
+```bash
+ssh-add -l
+```
+
+Du skal nå se nøklene som er lastet i Windows ssh-agent. Nå kan du bruke ssh og git-kommandoer i WSL med nøklene dine fra Windows, uten å måtte skrive inn passord hver gang.
+
+**Tips:**
+
+- Husk å legge til nye nøkler i Windows ssh-agent hvis du genererer dem i WSL og vil bruke dem i Windows også.
+- Hvis du bruker VSCode Remote eller DevContainers, vil forwarding av ssh-agent også fungere inn i containeren hvis du har satt opp forwarding i devcontainer.json.
