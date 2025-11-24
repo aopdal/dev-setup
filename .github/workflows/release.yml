@@ -1,0 +1,79 @@
+---
+# Create GitHub Release with Tag
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Triggers on version tags like v1.0.0, v2.1.3, etc.
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for changelog generation
+
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          # Remove 'v' prefix from tag to get version number
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Verify VERSION file matches tag
+        run: |
+          FILE_VERSION=$(cat VERSION)
+          TAG_VERSION=${{ steps.get_version.outputs.version }}
+          if [ "$FILE_VERSION" != "$TAG_VERSION" ]; then
+            echo "❌ Error: VERSION file ($FILE_VERSION) does not match tag ($TAG_VERSION)"
+            exit 1
+          fi
+          echo "✅ VERSION file matches tag: $TAG_VERSION"
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get the previous tag
+          PREV_TAG=$(git tag --sort=-version:refname | grep -v "^${{ steps.get_version.outputs.tag }}$" | head -n 1)
+
+          if [ -z "$PREV_TAG" ]; then
+            echo "First release - showing all commits"
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          else
+            echo "Changes since $PREV_TAG"
+            CHANGELOG=$(git log $PREV_TAG..${{ steps.get_version.outputs.tag }} --pretty=format:"- %s (%h)" --no-merges)
+          fi
+
+          # Save changelog to file
+          echo "$CHANGELOG" > CHANGELOG.txt
+
+          # Also output for debugging
+          echo "## Changelog"
+          cat CHANGELOG.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.tag }}
+          name: Release ${{ steps.get_version.outputs.tag }}
+          body_path: CHANGELOG.txt
+          draft: false
+          prerelease: false
+          generate_release_notes: true  # GitHub will also generate release notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release summary
+        run: |
+          echo "✅ Release created successfully!"
+          echo "📦 Version: ${{ steps.get_version.outputs.version }}"
+          echo "🏷️  Tag: ${{ steps.get_version.outputs.tag }}"
+          echo "🔗 URL: https://github.com/${{ github.repository }}/releases/tag/${{ steps.get_version.outputs.tag }}"

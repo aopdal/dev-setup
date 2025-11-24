@@ -19,6 +19,7 @@ fi
 if [ -f ".pre-commit-config.yaml" ]; then
     echo "🪝 Setting up pre-commit hooks..."
     pre-commit install
+    pre-commit install --hook-type commit-msg
     echo "✅ Pre-commit hooks installed"
 else
     echo "⚠️  .pre-commit-config.yaml not found, skipping pre-commit setup..."

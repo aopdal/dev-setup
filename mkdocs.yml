@@ -28,6 +28,7 @@ nav:
       - Git grunnleggende: git-basics.md
       - Github Actions: github-actions-deploy.md
       - Pre-commit: pre-commit-guide.md
+      - Conventional Commits: conventional-commits.md
   - Sikkerhets betraktninger:
       - Kritiske punkter: CRITICAL-FIXES.md
       - Security assessment: security-assessment.md

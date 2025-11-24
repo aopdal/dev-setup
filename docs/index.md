@@ -20,6 +20,9 @@ For vedlikehold og opprydding av Docker, se
 For å lære om pre-commit hooks for kodekvalitet, se
 [pre-commit-guide](pre-commit-guide.md).
 
+For å lære om Conventional Commits og versjonshåndtering, se
+[conventional-commits](conventional-commits.md).
+
 Dette oppsettet laget for å forenkle deling av kode mest mulig. Og ikke minst at
 kjøremiljøet skal være enkelt å holde konsistent fra PC til PC.
 
