@@ -193,7 +193,7 @@ Velg Open in Browser og fortsett med neste øvelse :smile:
 
 ## Bruke ssh-agent i Windows og forwarde til WSL
 
-Dette punktet hopper vi over for nå, men er helt klart en ting vi på sokt ønsker å legge til. Det gir samme ssh-nøkler i Windows, WSL og i devcontainer.
+Dette punktet hopper vi over for nå, men er helt klart en ting vi på sikt ønsker å legge til. Det gir samme ssh-nøkler i Windows, WSL og i devcontainer.
 
 For å bruke dine Windows SSH-nøkler og ssh-agent i WSL, kan du gjøre følgende:
 
