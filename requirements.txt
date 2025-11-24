@@ -2,6 +2,7 @@ mkdocs
 mkdocs-material
 ansible>=11.0.0,<12.0.0
 ansible-lint
+pre-commit
 # # Required by arubanetworks.aoscx collection
 # paramiko>=2.7.0
 # requests>=2.25.0

@@ -88,7 +88,7 @@ host_key_checking = False
 
 ## ⏱️ Estimated Time to Fix
 - Option A (1Password): 15-20 minutes
-- Option B (Env var): 5-10 minutes  
+- Option B (Env var): 5-10 minutes
 - Option C (Prompt): 2 minutes
 - Host key checking: 5-10 minutes
 

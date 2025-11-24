@@ -1,7 +1,7 @@
 # Security Assessment Report: aopdal/dev-setup
 
-**Date:** November 17, 2025  
-**Repository:** github.com/aopdal/dev-setup  
+**Date:** November 17, 2025
+**Repository:** github.com/aopdal/dev-setup
 **Assessed by:** Security Review
 
 ---
@@ -38,13 +38,13 @@ The repository follows many security best practices for DevContainer setup, with
 - **Impact:** Prevents privilege escalation attacks and limits container breakout risks
 
 #### 2. **Minimal Base Image**
-- **Status:** ✅ GOOD  
+- **Status:** ✅ GOOD
 - **Details:** Uses `python:3.12-slim` which is a minimal, official Python image
 - **Impact:** Reduced attack surface, fewer vulnerabilities from unnecessary packages
 
 #### 3. **Proper Cleanup After apt-get**
 - **Status:** ✅ GOOD
-- **Details:** 
+- **Details:**
   ```dockerfile
   && rm -rf /var/lib/apt/lists/*
   ```
@@ -76,15 +76,15 @@ The repository follows many security best practices for DevContainer setup, with
   ```
 - **Risk:** **HIGH** - Vault password stored in plaintext file
 - **Issue:** If `.vault_pass` contains the actual password (not a script), this is a **critical security vulnerability**
-- **Impact:** 
+- **Impact:**
   - Anyone with access to the repository/filesystem can decrypt all Ansible vault secrets
   - Credentials, API keys, and sensitive data in Ansible vaults would be exposed
-  
+
 - **IMMEDIATE ACTIONS REQUIRED:**
   1. **Verify `.vault_pass` is in `.gitignore`** ✅ (Confirmed - it is!)
   2. **Never commit this file to Git**
   3. **Use one of these secure alternatives:**
-  
+
   **Option A: Use a script instead of plaintext file**
   ```bash
   # Create .vault_pass_script.sh
@@ -96,7 +96,7 @@ The repository follows many security best practices for DevContainer setup, with
   # In ansible.cfg
   vault_password_file = ./.vault_pass_script.sh
   ```
-  
+
   **Option B: Use environment variable**
   ```bash
   # Set in shell/CI environment
@@ -106,7 +106,7 @@ The repository follows many security best practices for DevContainer setup, with
   # Remove from ansible.cfg, rely on env var
   # vault_password_file = ./.vault_pass
   ```
-  
+
   **Option C: Prompt for password**
   ```bash
   # Remove vault_password_file line entirely
@@ -122,14 +122,14 @@ The repository follows many security best practices for DevContainer setup, with
   && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME
   ```
 - **Risk:** Any compromise of the vscode user gives instant root access
-- **Recommendation:** 
+- **Recommendation:**
   - Consider requiring password for sudo (remove `NOPASSWD`)
   - Or limit sudo to specific commands only
   - Example:
     ```dockerfile
     # Option 1: Require password
     && echo $USERNAME ALL=\(root\) ALL > /etc/sudoers.d/$USERNAME
-    
+
     # Option 2: Limit to specific commands
     && echo "$USERNAME ALL=(root) NOPASSWD: /usr/bin/apt-get" > /etc/sudoers.d/$USERNAME
     ```
@@ -160,7 +160,7 @@ The repository follows many security best practices for DevContainer setup, with
 ### 3. **Pin Python Package Versions (MEDIUM PRIORITY)**
 - **Current State:** No `requirements.txt` visible in provided files
 - **Risk:** Unpinned dependencies may introduce vulnerabilities through automatic updates
-- **Recommendation:** 
+- **Recommendation:**
   - Use pinned versions: `mkdocs==1.5.3` instead of `mkdocs`
   - Consider using `pip-audit` or `safety` to scan for known vulnerabilities
   - Add to post-create.sh:
@@ -231,11 +231,11 @@ The repository follows many security best practices for DevContainer setup, with
   host_key_checking = False  # ⚠️ SECURITY RISK
   ```
 - **Risk:** Disabling host key checking makes you vulnerable to MITM attacks
-- **Recommendation:** 
+- **Recommendation:**
   ```ini
   # Option 1: Enable host key checking (preferred)
   host_key_checking = True
-  
+
   # Option 2: If you must disable it, document why and add compensating controls
   # host_key_checking = False  # Only for lab/testing - DO NOT USE IN PRODUCTION
   ```
@@ -246,7 +246,7 @@ The repository follows many security best practices for DevContainer setup, with
   # Add these security settings
   retry_files_enabled = False  # Prevents leaving .retry files with host info
   no_log = False              # Keep for debugging, but use 'no_log: true' on sensitive tasks
-  
+
   [privilege_escalation]
   become_ask_pass = True      # Require password for sudo operations
   ```

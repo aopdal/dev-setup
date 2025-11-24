@@ -15,7 +15,7 @@ if lpass status -q 2>/dev/null; then
 else
     echo "Please enter your LastPass email:"
     read -r LPASS_EMAIL
-    
+
     echo ""
     echo "Logging in to LastPass..."
     if lpass login "$LPASS_EMAIL"; then

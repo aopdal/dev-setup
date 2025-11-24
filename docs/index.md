@@ -11,6 +11,15 @@ For å lære om Ansible Vault og LastPass-integrasjonen, se
 For grunnleggende Git-kommandoer og arbeidsflyter, se
 [git-basics](git-basics.md).
 
+For å lære om automatisk deployment av dokumentasjon med GitHub Actions, se
+[github-actions-deploy](github-actions-deploy.md).
+
+For vedlikehold og opprydding av Docker, se
+[docker-vedlikehold](docker-vedlikehold.md).
+
+For å lære om pre-commit hooks for kodekvalitet, se
+[pre-commit-guide](pre-commit-guide.md).
+
 Dette oppsettet laget for å forenkle deling av kode mest mulig. Og ikke minst at
 kjøremiljøet skal være enkelt å holde konsistent fra PC til PC.
 
