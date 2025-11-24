@@ -1,11 +1,16 @@
 ---
-# Create GitHub Release with Tag
+# Automatic Release on Push to Main
 name: Create Release
 
 on:
   push:
-    tags:
-      - 'v*.*.*'  # Triggers on version tags like v1.0.0, v2.1.3, etc.
+    branches:
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.github/**'
+      - '.devcontainer/**'
 
 permissions:
   contents: write
@@ -18,62 +23,172 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for changelog generation
+          fetch-depth: 0  # Full history for version calculation
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract version from tag
-        id: get_version
+      - name: Get current version
+        id: current_version
         run: |
-          # Remove 'v' prefix from tag to get version number
-          VERSION=${GITHUB_REF#refs/tags/v}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          CURRENT_VERSION=$(cat VERSION)
+          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Current version: $CURRENT_VERSION"
 
-      - name: Verify VERSION file matches tag
+      - name: Get latest commits
+        id: commits
         run: |
-          FILE_VERSION=$(cat VERSION)
-          TAG_VERSION=${{ steps.get_version.outputs.version }}
-          if [ "$FILE_VERSION" != "$TAG_VERSION" ]; then
-            echo "❌ Error: VERSION file ($FILE_VERSION) does not match tag ($TAG_VERSION)"
-            exit 1
+          # Get commits since last tag
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          if [ -z "$LAST_TAG" ]; then
+            echo "No previous tag found, analyzing all commits"
+            COMMITS=$(git log --pretty=format:"%s" --no-merges)
+          else
+            echo "Analyzing commits since $LAST_TAG"
+            COMMITS=$(git log $LAST_TAG..HEAD --pretty=format:"%s" --no-merges)
           fi
-          echo "✅ VERSION file matches tag: $TAG_VERSION"
+
+          # Check for breaking changes, features, and fixes
+          BREAKING=$(echo "$COMMITS" | grep -E '^[a-z]+(\(.+\))?!:' || true)
+          FEATURES=$(echo "$COMMITS" | grep -E '^feat(\(.+\))?:' || true)
+          FIXES=$(echo "$COMMITS" | grep -E '^fix(\(.+\))?:' || true)
+
+          # Determine version bump
+          if [ -n "$BREAKING" ]; then
+            echo "bump=major" >> $GITHUB_OUTPUT
+            echo "🚨 Breaking changes detected - MAJOR version bump"
+          elif [ -n "$FEATURES" ]; then
+            echo "bump=minor" >> $GITHUB_OUTPUT
+            echo "✨ New features detected - MINOR version bump"
+          elif [ -n "$FIXES" ]; then
+            echo "bump=patch" >> $GITHUB_OUTPUT
+            echo "🐛 Fixes detected - PATCH version bump"
+          else
+            echo "bump=none" >> $GITHUB_OUTPUT
+            echo "ℹ️  No version bump needed"
+          fi
+
+      - name: Calculate new version
+        id: new_version
+        if: steps.commits.outputs.bump != 'none'
+        run: |
+          CURRENT=${{ steps.current_version.outputs.version }}
+          BUMP=${{ steps.commits.outputs.bump }}
+
+          # Parse current version
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+
+          # Calculate new version
+          if [ "$BUMP" = "major" ]; then
+            MAJOR=$((MAJOR + 1))
+            MINOR=0
+            PATCH=0
+          elif [ "$BUMP" = "minor" ]; then
+            MINOR=$((MINOR + 1))
+            PATCH=0
+          elif [ "$BUMP" = "patch" ]; then
+            PATCH=$((PATCH + 1))
+          fi
+
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "📦 New version: $NEW_VERSION"
+
+      - name: Update VERSION file
+        if: steps.commits.outputs.bump != 'none'
+        run: |
+          echo "${{ steps.new_version.outputs.version }}" > VERSION
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add VERSION
+          git commit -m "chore: bump version to ${{ steps.new_version.outputs.version }} [skip ci]"
+          git push origin main
+
+      - name: Create git tag
+        if: steps.commits.outputs.bump != 'none'
+        run: |
+          git tag -a ${{ steps.new_version.outputs.tag }} -m "Release ${{ steps.new_version.outputs.tag }}"
+          git push origin ${{ steps.new_version.outputs.tag }}
 
       - name: Generate changelog
+        if: steps.commits.outputs.bump != 'none'
         id: changelog
         run: |
           # Get the previous tag
-          PREV_TAG=$(git tag --sort=-version:refname | grep -v "^${{ steps.get_version.outputs.tag }}$" | head -n 1)
+          PREV_TAG=$(git tag --sort=-version:refname | grep -v "^${{ steps.new_version.outputs.tag }}$" | head -n 1)
 
           if [ -z "$PREV_TAG" ]; then
             echo "First release - showing all commits"
-            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+            COMMITS=$(git log --pretty=format:"%s" --no-merges)
           else
             echo "Changes since $PREV_TAG"
-            CHANGELOG=$(git log $PREV_TAG..${{ steps.get_version.outputs.tag }} --pretty=format:"- %s (%h)" --no-merges)
+            COMMITS=$(git log $PREV_TAG..${{ steps.new_version.outputs.tag }} --pretty=format:"%s" --no-merges)
           fi
 
-          # Save changelog to file
-          echo "$CHANGELOG" > CHANGELOG.txt
+          # Categorize commits
+          {
+            echo "## Changes"
+            echo ""
 
-          # Also output for debugging
-          echo "## Changelog"
+            # Breaking changes
+            BREAKING=$(echo "$COMMITS" | grep -E '^[a-z]+(\(.+\))?!:' || true)
+            if [ -n "$BREAKING" ]; then
+              echo "### 🚨 Breaking Changes"
+              echo "$BREAKING" | sed 's/^/- /'
+              echo ""
+            fi
+
+            # Features
+            FEATURES=$(echo "$COMMITS" | grep -E '^feat(\(.+\))?:' || true)
+            if [ -n "$FEATURES" ]; then
+              echo "### ✨ Features"
+              echo "$FEATURES" | sed 's/^/- /'
+              echo ""
+            fi
+
+            # Fixes
+            FIXES=$(echo "$COMMITS" | grep -E '^fix(\(.+\))?:' || true)
+            if [ -n "$FIXES" ]; then
+              echo "### 🐛 Bug Fixes"
+              echo "$FIXES" | sed 's/^/- /'
+              echo ""
+            fi
+
+            # Other changes
+            OTHER=$(echo "$COMMITS" | grep -Ev '^(feat|fix|[a-z]+!)(\(.+\))?:' || true)
+            if [ -n "$OTHER" ]; then
+              echo "### 🔧 Other Changes"
+              echo "$OTHER" | sed 's/^/- /'
+              echo ""
+            fi
+          } > CHANGELOG.txt
+
           cat CHANGELOG.txt
 
       - name: Create GitHub Release
+        if: steps.commits.outputs.bump != 'none'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.get_version.outputs.tag }}
-          name: Release ${{ steps.get_version.outputs.tag }}
+          tag_name: ${{ steps.new_version.outputs.tag }}
+          name: Release ${{ steps.new_version.outputs.tag }}
           body_path: CHANGELOG.txt
           draft: false
           prerelease: false
-          generate_release_notes: true  # GitHub will also generate release notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release summary
+        if: steps.commits.outputs.bump != 'none'
         run: |
           echo "✅ Release created successfully!"
-          echo "📦 Version: ${{ steps.get_version.outputs.version }}"
-          echo "🏷️  Tag: ${{ steps.get_version.outputs.tag }}"
-          echo "🔗 URL: https://github.com/${{ github.repository }}/releases/tag/${{ steps.get_version.outputs.tag }}"
+          echo "📦 Version: ${{ steps.new_version.outputs.version }}"
+          echo "🏷️  Tag: ${{ steps.new_version.outputs.tag }}"
+          echo "🔗 URL: https://github.com/${{ github.repository }}/releases/tag/${{ steps.new_version.outputs.tag }}"
+
+      - name: No release needed
+        if: steps.commits.outputs.bump == 'none'
+        run: |
+          echo "ℹ️  No version bump needed - skipping release"
+          echo "Current version remains: ${{ steps.current_version.outputs.version }}"
