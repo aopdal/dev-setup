@@ -34,6 +34,7 @@ nav:
       - Hemligheter i Ansible: ansible-vault-guide.md
   - Git:
       - Git grunnleggende: git-basics.md
+      - Git Workflows (Fork & Branch): git-workflows.md
       - Github Actions: github-actions-deploy.md
       - Pre-commit: pre-commit-guide.md
       - Conventional Commits: conventional-commits.md

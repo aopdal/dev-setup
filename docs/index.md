@@ -11,6 +11,9 @@ For å lære om Ansible Vault og LastPass-integrasjonen, se
 For grunnleggende Git-kommandoer og arbeidsflyter, se
 [git-basics](git-basics.md).
 
+For å lære om Fork vs. Branch workflows og Pull Requests, se
+[git-workflows](git-workflows.md).
+
 For å lære om automatisk deployment av dokumentasjon med GitHub Actions, se
 [github-actions-deploy](github-actions-deploy.md).
 
