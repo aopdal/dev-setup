@@ -126,19 +126,22 @@ På GitHub:
     - **head repository**: `dinbruker/prosjektnavn` compare: `feature/min-nye-funksjon`
 4. Fyll ut PR-beskrivelse:
 
-   ```markdown
-   ## Hva gjør denne PR-en?
-   Legger til ny funksjon for å...
+```markdown
+## Hva gjør denne PR-en?
 
-   ## Hvordan teste?
-   1. Kjør `python test.py`
-   2. Verifiser at...
+Legger til ny funksjon for å...
 
-   ## Checklist
-   - [x] Tester bestått
-   - [x] Dokumentasjon oppdatert
-   - [x] Conventional commits brukt
-   ```
+## Hvordan teste?
+
+1. Kjør `python test.py`
+2. Verifiser at...
+
+## Checklist
+
+- [x] Tester bestått
+- [x] Dokumentasjon oppdatert
+- [x] Conventional commits brukt
+```
 
 5. Klikk **Create pull request**
 
@@ -337,25 +340,25 @@ git push origin --delete feature/min-nye-funksjon
 
 1. **Branch-naming conventions:**
 
-   ```bash
-   feature/ny-funksjon      # Ny funksjonalitet
-   fix/bug-123              # Bugfix
-   docs/oppdater-readme     # Dokumentasjon
-   refactor/cleanup-code    # Refaktorering
-   test/add-unit-tests      # Testing
-   ```
+```bash
+feature/ny-funksjon      # Ny funksjonalitet
+fix/bug-123              # Bugfix
+docs/oppdater-readme     # Dokumentasjon
+refactor/cleanup-code    # Refaktorering
+test/add-unit-tests      # Testing
+```
 
 2. **Commit messages (Conventional Commits):**
 
-   ```bash
-   feat: legg til ny funksjon
-   fix: rett bug i login
-   docs: oppdater README
-   style: formater kode
-   refactor: omorganiser struktur
-   test: legg til unit tests
-   chore: oppdater dependencies
-   ```
+```bash
+feat: legg til ny funksjon
+fix: rett bug i login
+docs: oppdater README
+style: formater kode
+refactor: omorganiser struktur
+test: legg til unit tests
+chore: oppdater dependencies
+```
 
 3. **Hold PR-er små:**
     - En funksjon per PR
@@ -365,23 +368,27 @@ git push origin --delete feature/min-nye-funksjon
 
 4. **Skriv gode PR-beskrivelser:**
 
-   ```markdown
-   ## Problemet
-   Brukere kan ikke logge inn med e-post
+```markdown
+## Problemet
 
-   ## Løsningen
-   Legger til e-post validering i login-form
+Brukere kan ikke logge inn med e-post
 
-   ## Testing
-   1. Gå til /login
-   2. Skriv inn ugyldig e-post
-   3. Verifiser feilmelding
+## Løsningen
 
-   ## Screenshots
-   (hvis relevant)
+Legger til e-post validering i login-form
 
-   Fixes #123
-   ```
+## Testing
+
+1. Gå til /login
+2. Skriv inn ugyldig e-post
+3. Verifiser feilmelding
+
+## Screenshots
+
+(hvis relevant)
+
+Fixes #123
+```
 
 5. **Kommuniser:**
     - Tag reviewers
