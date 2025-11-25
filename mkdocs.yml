@@ -1,4 +1,12 @@
 site_name: GærneArnes nettverksskole
+site_description: Dokumentasjon for oppsett og vedlikehold av utviklingsmiljø
+site_author: Arne Opdal
+site_url: https://www.ao-test.net/dev-setup/
+copyright: '© 2025 Arne Opdal'
+
+
+repo_name: aopdal/dev-setup
+repo_url: https://github.com/aopdal/dev-setup
 
 theme:
   name: material
@@ -31,5 +39,4 @@ nav:
       - Conventional Commits: conventional-commits.md
       - GitHub Branch Protection: github-branch-protection.md
   - Sikkerhets betraktninger:
-      - Kritiske punkter: CRITICAL-FIXES.md
       - Security assessment: security-assessment.md
