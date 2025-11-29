@@ -1,8 +1,14 @@
 {
     "name": "MkDocs DevContainer",
     "build": {
-        "dockerfile": "Dockerfile"
+        "dockerfile": "Dockerfile",
+        "args": {
+            "USER_UID": "1000",
+            "USER_GID": "1000"
+        }
     },
+    "containerUser": "vscode",
+    "updateRemoteUserUID": true,
     "postCreateCommand": "bash .devcontainer/post-create.sh",
     "customizations": {
         "vscode": {
