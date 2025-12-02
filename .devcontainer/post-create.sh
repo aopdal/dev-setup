@@ -3,6 +3,12 @@ set -e
 
 echo "🔧 Running post-create setup..."
 
+# Create LastPass directories
+echo "📁 Creating LastPass directories..."
+mkdir -p ~/.config/lpass
+mkdir -p ~/.local/share/lpass
+echo "✅ LastPass directories created"
+
 # Upgrade pip
 echo "📦 Upgrading pip..."
 pip install --upgrade pip

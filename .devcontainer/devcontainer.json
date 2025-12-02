@@ -1,5 +1,5 @@
 {
-    "name": "MkDocs DevContainer",
+    "name": "Dev-setup",
     "build": {
         "dockerfile": "Dockerfile",
         "args": {
