@@ -6,6 +6,49 @@ Og vi bruker WSL2 med Ubuntu 24.04, docker for devcontainers og VSCode som edito
 Dette er i første rekke en hjelp for netverkskonsulenter for å komme opp på felles
 verktøyplatform for deling av kode og enkelt kunne hoppe inn o kjøre andres kode.
 
+## Arkitektur-oversikt
+
+```mermaid
+graph TB
+    subgraph Windows["💻 Windows 11 Host"]
+        VSCode["🖥️ VS Code<br/>(Editor)"]
+        Browser["🌐 Browser<br/>(localhost:8000)"]
+    end
+
+    subgraph WSL2["🐧 WSL2 - Ubuntu 24.04"]
+        DockerEngine["🐋 Docker Engine"]
+        FileSystem["📁 File System<br/>(/home/user/projects)"]
+
+        subgraph DevContainer["📦 DevContainer"]
+            Python["🐍 Python 3.12"]
+            Ansible["⚙️ Ansible"]
+            LastPass["🔐 LastPass CLI"]
+            MkDocs["📚 MkDocs"]
+            PreCommit["✅ Pre-commit"]
+            Git["📝 Git"]
+        end
+    end
+
+    VSCode -.->|"Remote WSL"|FileSystem
+    VSCode ==>|"Dev Container"|DevContainer
+    Browser -.->|"Port Forward"|MkDocs
+    DockerEngine -->|"Runs"|DevContainer
+    FileSystem -->|"Mounts"|DevContainer
+
+    style Windows fill:#71bbf4,stroke:#004578,color:#fff
+    style WSL2 fill:#ff6666,stroke:#9f2f0f,color:#fff
+    style DevContainer fill:#71bbf4,stroke:#1a6ba8,color:#fff
+    style VSCode fill:#007acc,stroke:#005a9e,color:#fff
+    style DockerEngine fill:#2496ed,stroke:#1a6ba8,color:#fff
+```
+
+**Forklaring:**
+
+- **Windows 11**: Din fysiske PC, kjører VS Code og browser
+- **WSL2**: Linux-miljø i Windows, kjører Docker Engine
+- **DevContainer**: Isolert utviklingsmiljø med alle verktøy installert
+- **Port Forwarding**: Tilgang til tjenester som kjører i containeren (f.eks. MkDocs på port 8000)
+
 ## Installasjon av WSL2
 
 [Microsoft dokumentasjon](https://learn.microsoft.com/en-us/windows/wsl/install)
