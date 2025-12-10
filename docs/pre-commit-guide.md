@@ -8,6 +8,8 @@ Dette prosjektet bruker [pre-commit](https://pre-commit.com/) for å automatisk 
 
 Pre-commit er et rammeverk for å administrere og vedlikeholde multi-language pre-commit hooks. Det kjører spesifiserte verktøy automatisk før hver git commit, og stopper committen hvis det finnes feil.
 
+Pre-commit kjører lokalt på maskinen og konfigurasjonen er den samme uavhengig om man bruker GitHub, GitLab eller BitBucket som git server. Om pre-commit skal integreres i "pipeline" på serversiden må det gjøres på den spesifike måten platformen løser det.
+
 ## Installerte hooks
 
 ### 1. Generelle fil-sjekker
